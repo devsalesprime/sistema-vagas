@@ -1,0 +1,432 @@
+/* Estilos para o formulário de candidatura a vagas */
+
+#formulario-candidatura {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  border: 1px solid #e1e5e9;
+}
+
+#formulario-candidatura label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: block;
+  color: #333;
+  font-size: 14px;
+}
+
+#formulario-candidatura .asterisco {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+#formulario-candidatura input[type="text"],
+#formulario-candidatura input[type="email"],
+#formulario-candidatura input[type="url"],
+#formulario-candidatura input[type="file"],
+#formulario-candidatura select,
+#formulario-candidatura textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+#formulario-candidatura input:focus,
+#formulario-candidatura textarea:focus,
+#formulario-candidatura select:focus {
+  border-color: #0073aa;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
+}
+
+#formulario-candidatura textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#formulario-candidatura button {
+  background: linear-gradient(90deg, #F2A011 0%, #F25C05 100%);
+  color: white;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#formulario-candidatura button:hover:not(:disabled) {
+  background-color: #005f8d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#formulario-candidatura button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Estilos para as mensagens de feedback */
+.mensagem-sucesso,
+.mensagem-erro {
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  text-align: center;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.mensagem-sucesso {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.mensagem-erro {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Estilos para campos obrigatórios */
+.campo-obrigatorio label {
+  position: relative;
+}
+
+.campos-obrigatorios-info {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Estilos para o input de arquivo */
+#formulario-candidatura input[type="file"] {
+  padding: 8px;
+  background-color: #f8f9fa;
+}
+
+#formulario-candidatura small {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: -15px;
+  margin-bottom: 15px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  #formulario-candidatura {
+    margin: 20px 10px;
+    padding: 20px;
+  }
+  
+  #formulario-candidatura button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Animação de carregamento */
+#formulario-candidatura button:disabled::after {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 10px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Melhorias visuais */
+#formulario-candidatura .campo-obrigatorio,
+#formulario-candidatura .campo-opcional,
+#formulario-candidatura .campo-envio {
+  margin-bottom: 20px;
+}
+
+#formulario-candidatura select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  appearance: none;
+}
+
+/* Estilos para a mensagem de sucesso da candidatura */
+
+.candidatura-sucesso-container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e8eaed;
+    animation: slideInUp 0.6s ease-out;
+}
+
+.candidatura-sucesso-icon {
+    text-align: center;
+    padding: 40px 30px 20px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.check-animation {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+.check-svg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 3;
+    stroke: #ffffff;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #28a745;
+    animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+}
+
+.check-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 3;
+    stroke-miterlimit: 10;
+    stroke: #ffffff;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.check-path {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+.candidatura-sucesso-content {
+    padding: 30px;
+    text-align: center;
+}
+
+.candidatura-sucesso-content h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    letter-spacing: -0.5px;
+}
+
+.candidatura-sucesso-content > p {
+    font-size: 16px;
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.candidatura-sucesso-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-left: 4px solid #28a745;
+    text-align: left;
+}
+
+.candidatura-sucesso-info p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.candidatura-sucesso-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.candidatura-sucesso-info li {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.candidatura-sucesso-info li:last-child {
+    margin-bottom: 0;
+}
+
+.candidatura-sucesso-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-voltar-home,
+.btn-ver-outras-vagas {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    min-width: 160px;
+}
+
+.btn-voltar-home {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+}
+
+.btn-voltar-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+    text-decoration: none;
+    color: white;
+}
+
+.btn-ver-outras-vagas {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+}
+
+.btn-ver-outras-vagas:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+    text-decoration: none;
+    color: white;
+}
+
+/* Animações adicionais */
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #28a745;
+    }
+}
+
+/* Responsividade para mensagem de sucesso */
+@media (max-width: 768px) {
+    .candidatura-sucesso-container {
+        margin: 20px 10px;
+        border-radius: 16px;
+    }
+    
+    .candidatura-sucesso-icon {
+        padding: 30px 20px 15px;
+    }
+    
+    .check-animation {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .check-svg {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .candidatura-sucesso-content {
+        padding: 20px;
+    }
+    
+    .candidatura-sucesso-content h3 {
+        font-size: 24px;
+    }
+    
+    .candidatura-sucesso-info {
+        padding: 20px;
+    }
+    
+    .candidatura-sucesso-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-voltar-home,
+    .btn-ver-outras-vagas {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .candidatura-sucesso-content h3 {
+        font-size: 20px;
+    }
+    
+    .candidatura-sucesso-content > p {
+        font-size: 14px;
+    }
+    
+    .candidatura-sucesso-info {
+        padding: 15px;
+    }
+    
+    .candidatura-sucesso-info p {
+        font-size: 14px;
+    }
+    
+    .candidatura-sucesso-info li {
+        font-size: 13px;
+    }
+}
+
