@@ -397,13 +397,18 @@ function sv_enviar_email_mudanca_status($candidatura_id, $novo_status) {
     $vaga_titulo = $vaga ? $vaga->post_title : 'Vaga não encontrada';
     $vaga_link = $vaga ? get_permalink($vaga_id) : home_url();
     $empresa_nome = $vaga ? get_post_meta($vaga_id, '_vaga_empresa', true) : get_bloginfo('name');
-    
+    $remuneracao = $vaga ? get_post_meta($vaga_id, '_vaga_salario', true) : '';
+    if (empty($remuneracao)) {
+        $remuneracao = 'A combinar';
+    }
+
     // 3. Preparar os placeholders e os valores de substituição
     $placeholders = [
         '[nome_candidato]' => $candidato_nome,
         '[titulo_vaga]'    => $vaga_titulo,
         '[nome_empresa]'   => $empresa_nome,
         '[link_vaga]'      => $vaga_link,
+        '[remuneracao]'    => $remuneracao,
         '[nome_site]'      => get_bloginfo('name'),
     ];
 
@@ -565,11 +570,12 @@ function sv_candidaturas_processar_acoes_massa_com_email($redirect_to, $doaction
                 // Atualiza o status
                 update_post_meta($post_id, '_candidatura_status', $novo_status);
                 
-                // Envia email se o status mudou
+                // Envia email se o status mudou (usa os templates configurados,
+                // os mesmos placeholders da alteração individual de status)
                 if ($status_anterior !== $novo_status) {
-                    sv_enviar_email_notificacao_status($post_id, $novo_status);
+                    sv_enviar_email_mudanca_status($post_id, $novo_status);
                 }
-                
+
                 $contador++;
             }
         }

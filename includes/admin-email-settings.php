@@ -78,6 +78,7 @@ function sv_email_templates_section_callback() {
     echo '<code>[titulo_vaga]</code> - O título da vaga para a qual ele se candidatou.<br>';
     echo '<code>[nome_empresa]</code> - O nome da empresa contratante.<br>';
     echo '<code>[link_vaga]</code> - O link permanente para a página da vaga.<br>';
+    echo '<code>[remuneracao]</code> - A remuneração/salário definido na vaga.<br>';
     echo '<code>[nome_site]</code> - O nome do seu site.</p>';
 }
 
