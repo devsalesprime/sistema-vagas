@@ -151,10 +151,25 @@ function sv_adicionar_meta_boxes_vaga() {
 }
 add_action('add_meta_boxes', 'sv_adicionar_meta_boxes_vaga');
 
+// Verifica se um campo da vaga deve aparecer na página pública (default: visível)
+function sv_vaga_campo_visivel($post_id, $campo) {
+    return get_post_meta($post_id, '_vaga_mostrar_' . $campo, true) !== '0';
+}
+
+// Renderiza o switch (liga/desliga) ao lado do campo no meta box
+function sv_vaga_toggle_html($campo, $checado) {
+    ob_start(); ?>
+    <label class="sv-switch" title="Quando desligado, este campo não aparece na página pública da vaga">
+        <input type="checkbox" class="sv-toggle" name="vaga_mostrar_<?php echo esc_attr($campo); ?>" data-target="vaga_<?php echo esc_attr($campo); ?>" <?php checked($checado); ?> />
+        <span class="sv-slider"></span>
+    </label>
+    <?php return ob_get_clean();
+}
+
 // Conteúdo da meta box
 function sv_meta_box_vaga_detalhes($post) {
     wp_nonce_field('sv_salvar_vaga_detalhes', 'sv_vaga_detalhes_nonce');
-    
+
     $salario = get_post_meta($post->ID, '_vaga_salario', true);
     $localizacao = get_post_meta($post->ID, '_vaga_localizacao', true);
     $tipo_contrato = get_post_meta($post->ID, '_vaga_tipo_contrato', true);
@@ -163,23 +178,44 @@ function sv_meta_box_vaga_detalhes($post) {
     $modalidade = get_post_meta($post->ID, '_vaga_modalidade', true);
     $beneficios = get_post_meta($post->ID, '_vaga_beneficios', true);
     $requisitos = get_post_meta($post->ID, '_vaga_requisitos', true);
+
+    // Estado de visibilidade de cada campo (default: visível)
+    $mostrar_empresa       = sv_vaga_campo_visivel($post->ID, 'empresa');
+    $mostrar_salario       = sv_vaga_campo_visivel($post->ID, 'salario');
+    $mostrar_localizacao   = sv_vaga_campo_visivel($post->ID, 'localizacao');
+    $mostrar_modalidade    = sv_vaga_campo_visivel($post->ID, 'modalidade');
+    $mostrar_tipo_contrato = sv_vaga_campo_visivel($post->ID, 'tipo_contrato');
+    $mostrar_nivel         = sv_vaga_campo_visivel($post->ID, 'nivel');
+    $mostrar_requisitos    = sv_vaga_campo_visivel($post->ID, 'requisitos');
+    $mostrar_beneficios    = sv_vaga_campo_visivel($post->ID, 'beneficios');
     ?>
-    
+
+    <style>
+        .sv-th-flex { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .sv-switch { position: relative; display: inline-block; width: 42px; height: 22px; flex: 0 0 auto; }
+        .sv-switch input { opacity: 0; width: 0; height: 0; margin: 0; }
+        .sv-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #c3c4c7; transition: .2s; border-radius: 22px; }
+        .sv-slider:before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #fff; transition: .2s; border-radius: 50%; }
+        .sv-switch input:checked + .sv-slider { background: #2271b1; }
+        .sv-switch input:checked + .sv-slider:before { transform: translateX(20px); }
+        .sv-field-off { opacity: .45; background: #f6f7f7; }
+    </style>
+
     <table class="form-table">
         <tr>
-            <th><label for="vaga_empresa">Empresa:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_empresa">Empresa:</label><?php echo sv_vaga_toggle_html('empresa', $mostrar_empresa); ?></span></th>
             <td><input type="text" id="vaga_empresa" name="vaga_empresa" value="<?php echo esc_attr($empresa); ?>" style="width: 100%;" /></td>
         </tr>
         <tr>
-            <th><label for="vaga_salario">Salário:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_salario">Salário:</label><?php echo sv_vaga_toggle_html('salario', $mostrar_salario); ?></span></th>
             <td><input type="text" id="vaga_salario" name="vaga_salario" value="<?php echo esc_attr($salario); ?>" placeholder="Ex: R$ 3.000 - R$ 5.000" style="width: 100%;" /></td>
         </tr>
         <tr>
-            <th><label for="vaga_localizacao">Localização:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_localizacao">Localização:</label><?php echo sv_vaga_toggle_html('localizacao', $mostrar_localizacao); ?></span></th>
             <td><input type="text" id="vaga_localizacao" name="vaga_localizacao" value="<?php echo esc_attr($localizacao); ?>" placeholder="Ex: São Paulo, SP" style="width: 100%;" /></td>
         </tr>
         <tr>
-            <th><label for="vaga_modalidade">Modalidade:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_modalidade">Modalidade:</label><?php echo sv_vaga_toggle_html('modalidade', $mostrar_modalidade); ?></span></th>
             <td>
                 <select id="vaga_modalidade" name="vaga_modalidade" style="width: 100%;">
                     <option value="">Selecione...</option>
@@ -190,7 +226,7 @@ function sv_meta_box_vaga_detalhes($post) {
             </td>
         </tr>
         <tr>
-            <th><label for="vaga_tipo_contrato">Tipo de Contrato:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_tipo_contrato">Tipo de Contrato:</label><?php echo sv_vaga_toggle_html('tipo_contrato', $mostrar_tipo_contrato); ?></span></th>
             <td>
                 <select id="vaga_tipo_contrato" name="vaga_tipo_contrato" style="width: 100%;">
                     <option value="">Selecione...</option>
@@ -203,7 +239,7 @@ function sv_meta_box_vaga_detalhes($post) {
             </td>
         </tr>
         <tr>
-            <th><label for="vaga_nivel">Nível:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_nivel">Nível:</label><?php echo sv_vaga_toggle_html('nivel', $mostrar_nivel); ?></span></th>
             <td>
                 <select id="vaga_nivel" name="vaga_nivel" style="width: 100%;">
                     <option value="">Selecione...</option>
@@ -217,15 +253,42 @@ function sv_meta_box_vaga_detalhes($post) {
             </td>
         </tr>
         <tr>
-            <th><label for="vaga_requisitos">Requisitos:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_requisitos">Requisitos:</label><?php echo sv_vaga_toggle_html('requisitos', $mostrar_requisitos); ?></span></th>
             <td><textarea id="vaga_requisitos" name="vaga_requisitos" rows="4" style="width: 100%;" placeholder="Ex: Graduação em área relacionada, experiência com..."><?php echo esc_textarea($requisitos); ?></textarea></td>
         </tr>
         <tr>
-            <th><label for="vaga_beneficios">Benefícios:</label></th>
+            <th><span class="sv-th-flex"><label for="vaga_beneficios">Benefícios:</label><?php echo sv_vaga_toggle_html('beneficios', $mostrar_beneficios); ?></span></th>
             <td><textarea id="vaga_beneficios" name="vaga_beneficios" rows="4" style="width: 100%;" placeholder="Ex: Vale alimentação, plano de saúde, home office..."><?php echo esc_textarea($beneficios); ?></textarea></td>
         </tr>
     </table>
-    
+
+    <script>
+    (function () {
+        // Reflete o estado do switch no input (apenas visual: não usamos "disabled"
+        // para que o valor continue sendo enviado e salvo mesmo com o campo oculto).
+        function aplicarEstado(toggle) {
+            var alvo = document.getElementById(toggle.dataset.target);
+            if (!alvo) return;
+            if (toggle.checked) {
+                alvo.classList.remove('sv-field-off');
+                alvo.readOnly = false;
+                alvo.style.pointerEvents = '';
+            } else {
+                alvo.classList.add('sv-field-off');
+                if (alvo.tagName === 'SELECT') {
+                    alvo.style.pointerEvents = 'none';
+                } else {
+                    alvo.readOnly = true;
+                }
+            }
+        }
+        document.querySelectorAll('.sv-toggle').forEach(function (toggle) {
+            aplicarEstado(toggle);
+            toggle.addEventListener('change', function () { aplicarEstado(toggle); });
+        });
+    })();
+    </script>
+
     <?php
 }
 
@@ -297,7 +360,7 @@ function sv_salvar_vaga_detalhes($post_id) {
     }
 
     $campos = array('vaga_empresa', 'vaga_salario', 'vaga_localizacao', 'vaga_modalidade', 'vaga_tipo_contrato', 'vaga_nivel', 'vaga_requisitos', 'vaga_beneficios');
-    
+
     foreach ($campos as $campo) {
         if (isset($_POST[$campo])) {
             if (in_array($campo, array('vaga_requisitos', 'vaga_beneficios'))) {
@@ -306,6 +369,14 @@ function sv_salvar_vaga_detalhes($post_id) {
                 update_post_meta($post_id, '_' . $campo, sanitize_text_field($_POST[$campo]));
             }
         }
+    }
+
+    // Visibilidade de cada campo na página pública (switch liga/desliga).
+    // Checkbox desmarcado não é enviado, então a ausência significa "ocultar" ('0').
+    $toggles = array('empresa', 'salario', 'localizacao', 'modalidade', 'tipo_contrato', 'nivel', 'requisitos', 'beneficios');
+    foreach ($toggles as $campo) {
+        $visivel = isset($_POST['vaga_mostrar_' . $campo]) ? '1' : '0';
+        update_post_meta($post_id, '_vaga_mostrar_' . $campo, $visivel);
     }
 }
 add_action('save_post', 'sv_salvar_vaga_detalhes');
@@ -327,7 +398,7 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
         
         // Header da vaga com informações principais
         $detalhes .= '<div class="vaga-header">';
-        if ($empresa) {
+        if ($empresa && sv_vaga_campo_visivel($post_id, 'empresa')) {
             $detalhes .= '<div class="vaga-empresa">';
             $detalhes .= '<span class="vaga-icon">🏢</span>';
             $detalhes .= '<span class="vaga-empresa-nome">' . esc_html($empresa) . '</span>';
@@ -341,7 +412,7 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
         // Cards com informações principais
         $detalhes .= '<div class="vaga-info-cards">';
         
-        if ($salario) {
+        if ($salario && sv_vaga_campo_visivel($post_id, 'salario')) {
             $detalhes .= '<div class="vaga-card vaga-card-salario">';
             $detalhes .= '<div class="vaga-card-icon">💰</div>';
             $detalhes .= '<div class="vaga-card-content">';
@@ -351,7 +422,7 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
             $detalhes .= '</div>';
         }
         
-        if ($localizacao) {
+        if ($localizacao && sv_vaga_campo_visivel($post_id, 'localizacao')) {
             $detalhes .= '<div class="vaga-card vaga-card-localizacao">';
             $detalhes .= '<div class="vaga-card-icon">📍</div>';
             $detalhes .= '<div class="vaga-card-content">';
@@ -361,7 +432,7 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
             $detalhes .= '</div>';
         }
         
-        if ($modalidade) {
+        if ($modalidade && sv_vaga_campo_visivel($post_id, 'modalidade')) {
             $modalidade_icon = $modalidade === 'Remoto' ? '🏠' : ($modalidade === 'Híbrido' ? '🔄' : '🏢');
             $detalhes .= '<div class="vaga-card vaga-card-modalidade">';
             $detalhes .= '<div class="vaga-card-icon">' . $modalidade_icon . '</div>';
@@ -372,7 +443,7 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
             $detalhes .= '</div>';
         }
         
-        if ($tipo_contrato) {
+        if ($tipo_contrato && sv_vaga_campo_visivel($post_id, 'tipo_contrato')) {
             $detalhes .= '<div class="vaga-card vaga-card-contrato">';
             $detalhes .= '<div class="vaga-card-icon">📋</div>';
             $detalhes .= '<div class="vaga-card-content">';
@@ -382,7 +453,7 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
             $detalhes .= '</div>';
         }
         
-        if ($nivel) {
+        if ($nivel && sv_vaga_campo_visivel($post_id, 'nivel')) {
             $detalhes .= '<div class="vaga-card vaga-card-nivel">';
             $detalhes .= '<div class="vaga-card-icon">⭐</div>';
             $detalhes .= '<div class="vaga-card-content">';
@@ -395,23 +466,25 @@ function sv_exibir_detalhes_vaga_no_conteudo($content) {
         $detalhes .= '</div>'; // Fim dos cards
 
         // Seções de requisitos e benefícios
-if ($requisitos || $beneficios) {
+$mostra_requisitos = $requisitos && sv_vaga_campo_visivel($post_id, 'requisitos');
+$mostra_beneficios = $beneficios && sv_vaga_campo_visivel($post_id, 'beneficios');
+if ($mostra_requisitos || $mostra_beneficios) {
     $detalhes .= '<div class="vaga-sections">';
-    
-    if ($requisitos) {
+
+    if ($mostra_requisitos) {
         $detalhes .= '<div class="vaga-section vaga-requisitos">';
         $detalhes .= '<h3 class="vaga-section-title">📝 Requisitos</h3>';
         $detalhes .= '<div class="vaga-section-content">' . nl2br(esc_html($requisitos)) . '</div>';
         $detalhes .= '</div>';
     }
-    
-    if ($beneficios) {
+
+    if ($mostra_beneficios) {
         $detalhes .= '<div class="vaga-section vaga-beneficios">';
         $detalhes .= '<h3 class="vaga-section-title">🎁 Benefícios</h3>';
         $detalhes .= '<div class="vaga-section-content">' . nl2br(esc_html($beneficios)) . '</div>';
         $detalhes .= '</div>';
     }
-    
+
     $detalhes .= '</div>'; // Fim das seções
 }
 
