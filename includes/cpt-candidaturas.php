@@ -368,7 +368,39 @@ function sv_salvar_candidatura_detalhes($post_id) {
 add_action('save_post', 'sv_salvar_candidatura_detalhes');
 
 
-// ADICIONE ESTA NOVA FUNÇÃO NO FINAL DO ARQUIVO cpt-candidaturas.php
+// Texto padrão de e-mail por status (usado quando não há template configurado).
+// Retorna array('subject' => ..., 'message' => ...) ou null se o status não notifica.
+function sv_email_template_padrao($status) {
+    $padroes = array(
+        'em_analise' => array(
+            'subject' => 'Sua candidatura para [titulo_vaga] está em análise',
+            'message' => "Olá [nome_candidato],\n\nRecebemos a sua candidatura para a vaga [titulo_vaga] na [nome_empresa] e ela está em análise pela nossa equipe.\n\nEm breve retornaremos com novidades.\n\nAtenciosamente,\nEquipe [nome_site]",
+        ),
+        'entrevista' => array(
+            'subject' => 'Convite para entrevista - [titulo_vaga]',
+            'message' => "Olá [nome_candidato],\n\nTemos uma ótima notícia! Você avançou no processo seletivo para a vaga [titulo_vaga] na [nome_empresa] e gostaríamos de convidá-lo(a) para uma entrevista.\n\nEm breve entraremos em contato para combinar os detalhes.\n\nAtenciosamente,\nEquipe [nome_site]",
+        ),
+        'aprovada' => array(
+            'subject' => 'Parabéns! Você foi aprovado(a) - [titulo_vaga]',
+            'message' => "Olá [nome_candidato],\n\nÉ com grande satisfação que informamos que você foi aprovado(a) no processo seletivo para a vaga [titulo_vaga] na [nome_empresa].\n\nNossa equipe entrará em contato para os próximos passos.\n\nAtenciosamente,\nEquipe [nome_site]",
+        ),
+        'rejeitada' => array(
+            'subject' => 'Atualização sobre sua candidatura - [titulo_vaga]',
+            'message' => "Olá [nome_candidato],\n\nAgradecemos o seu interesse na vaga [titulo_vaga] na [nome_empresa] e a sua participação no processo seletivo.\n\nNeste momento seguiremos com outros candidatos, mas o seu perfil ficará em nosso banco de talentos para futuras oportunidades.\n\nAtenciosamente,\nEquipe [nome_site]",
+        ),
+        'desistencia' => array(
+            'subject' => 'Recebemos a sua desistência - [titulo_vaga]',
+            'message' => "Olá [nome_candidato],\n\nRegistramos a sua desistência do processo seletivo para a vaga [titulo_vaga] na [nome_empresa].\n\nAgradecemos o seu interesse e desejamos sucesso na sua jornada.\n\nAtenciosamente,\nEquipe [nome_site]",
+        ),
+        'finalizada' => array(
+            'subject' => 'Processo seletivo finalizado - [titulo_vaga]',
+            'message' => "Olá [nome_candidato],\n\nInformamos que o processo seletivo para a vaga [titulo_vaga] na [nome_empresa] foi finalizado.\n\nAgradecemos a sua participação.\n\nAtenciosamente,\nEquipe [nome_site]",
+        ),
+    );
+
+    return isset($padroes[$status]) ? $padroes[$status] : null;
+}
+
 /**
  * Envia um e-mail para o candidato quando o status da candidatura muda.
  *
@@ -378,10 +410,19 @@ add_action('save_post', 'sv_salvar_candidatura_detalhes');
 function sv_enviar_email_mudanca_status($candidatura_id, $novo_status) {
     // 1. Obter os templates de e-mail salvos nas configurações
     $templates = get_option('sv_email_templates');
+    $assunto_template  = isset($templates[$novo_status]['subject']) ? $templates[$novo_status]['subject'] : '';
+    $mensagem_template = isset($templates[$novo_status]['message']) ? $templates[$novo_status]['message'] : '';
 
-    // Verifica se existe um template para o novo status
-    if (!isset($templates[$novo_status]) || empty($templates[$novo_status]['message'])) {
-        return; // Não faz nada se não houver template definido
+    // Sem template configurado (ou incompleto): usa o texto padrão do status, se houver.
+    $padrao = sv_email_template_padrao($novo_status);
+    if ($padrao) {
+        if ($assunto_template === '')  { $assunto_template  = $padrao['subject']; }
+        if ($mensagem_template === '') { $mensagem_template = $padrao['message']; }
+    }
+
+    // Status sem template e sem padrão (ex.: "nova"): não envia.
+    if ($assunto_template === '' || $mensagem_template === '') {
+        return;
     }
 
     // 2. Obter todos os dados necessários
@@ -413,8 +454,8 @@ function sv_enviar_email_mudanca_status($candidatura_id, $novo_status) {
     ];
 
     // 4. Substituir os placeholders no assunto e na mensagem
-    $assunto = $templates[$novo_status]['subject'];
-    $mensagem = $templates[$novo_status]['message'];
+    $assunto = $assunto_template;
+    $mensagem = $mensagem_template;
 
     foreach ($placeholders as $placeholder => $value) {
         $assunto = str_replace($placeholder, $value, $assunto);
